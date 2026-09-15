@@ -1,0 +1,125 @@
+import React from "react";
+import { Activity } from "lucide-react";
+
+export function StructuredResponseCard({ data }) {
+    if (!data || data.length === 0) {
+        return null;
+    }
+    const topPrediction = data[0];
+    let urgency = "Low";
+
+    if (topPrediction.confidence >= 70) {
+        urgency = "High";
+    } else if (topPrediction.confidence >= 40) {
+        urgency = "Moderate";
+    }
+
+    const urgencyStyle = {
+        High: "bg-rose-500/10 text-rose-600 border border-rose-500/30",
+        Moderate: "bg-amber-500/10 text-amber-600 border border-amber-500/30",
+        Low: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30",
+    };
+
+    const getRecommendation = () => {
+        if (urgency === "High") {
+            return [
+                "Consult a doctor immediately.",
+                "Do not ignore worsening symptoms.",
+                "Seek emergency care if symptoms become severe.",
+            ];
+        }
+
+        if (urgency === "Moderate") {
+            return [
+                "Book an appointment with a healthcare professional.",
+                "Monitor your symptoms carefully.",
+                "Drink plenty of fluids and rest.",
+            ];
+        }
+
+        return [
+            "Continue monitoring your symptoms.",
+            "Rest and stay hydrated.",
+            "Consult a doctor if symptoms persist or worsen.",
+        ];
+    };
+
+    return (
+        <div className="space-y-4 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+
+            {/* Urgency */}
+            <div className="flex items-center justify-between bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                <span className="text-xs font-semibold text-slate-500">
+                    Assessed Urgency
+                </span>
+
+                <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${urgencyStyle[urgency]}`}
+                >
+                    ● {urgency}
+                </span>
+            </div>
+
+            {/* Predictions */}
+            <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                    Top Disease Predictions
+                </h4>
+
+                <div className="space-y-3">
+                    {data.map((prediction, index) => (
+                        <div
+                            key={index}
+                            className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800"
+                        >
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-2">
+                                    <Activity className="w-4 h-4 text-emerald-500" />
+                                    <span className="font-semibold capitalize text-slate-800 dark:text-white">
+                                        {prediction.disease.replace(/_/g, " ")}
+                                    </span>
+                                </div>
+
+                                <span className="font-bold text-emerald-600">
+                                    {prediction.confidence.toFixed(2)}%
+                                </span>
+                            </div>
+
+                            <div className="mt-3 w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-700"
+                                    style={{
+                                        width: `${prediction.confidence}%`,
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Recommendations */}
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-300 dark:border-emerald-700 rounded-xl p-4">
+                <h4 className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 mb-3">
+                    Recommended Next Steps
+                </h4>
+
+                <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                    {getRecommendation().map((step, index) => (
+                        <li key={index} className="flex gap-2">
+                            <span className="text-emerald-500">✔</span>
+                            <span>{step}</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+
+            {/* Disclaimer */}
+            <div className="text-xs text-slate-500 dark:text-slate-400 italic">
+                ⚠️ These predictions are generated by an AI model and are not a medical diagnosis.
+                Please consult a qualified healthcare professional for an accurate diagnosis and treatment.
+            </div>
+
+        </div>
+    );
+}
