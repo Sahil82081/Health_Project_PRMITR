@@ -6,15 +6,18 @@ import routes from "../routes/routes.js";
 
 
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
-const allowedOrigins = process.env.DOMAINS.split(",");
+const allowedOrigins = process.env.DOMAINS
+    ? process.env.DOMAINS.split(",").map((domain) => domain.trim()).filter(Boolean)
+    : ["http://localhost:5173"];
+
 const corsOptions = {
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
             callback(null, true);
         } else {
-            callback(new Error("Not allowed by CORS"));
+            callback(new Error(`Not allowed by CORS: ${origin}`));
         }
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],

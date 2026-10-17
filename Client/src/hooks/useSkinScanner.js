@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 export function useDermScan() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
@@ -49,7 +50,7 @@ export function useDermScan() {
         formData.append("image", imageFile);
 
         const response = await axios.post(
-            "http://localhost:8000/api/analyze",
+            API_ENDPOINTS.ANALYZE,
             formData
         );
 

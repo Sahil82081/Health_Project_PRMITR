@@ -1,4 +1,11 @@
 {
+  "name": "health-project-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js"
+  },
   "dependencies": {
     "@google/genai": "^2.15.0",
     "axios": "^1.19.0",

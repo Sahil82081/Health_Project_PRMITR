@@ -56,9 +56,10 @@ const handleChat = async (req, res) => {
 const predictDisease = async (req, res) => {
     try {
         const { symptoms } = req.body;
+        const mlBaseUrl = (process.env.ML_API_URL || "http://127.0.0.1:5000").replace(/\/+$/, "");
 
         const response = await axios.post(
-            "http://127.0.0.1:5000/predict",
+            `${mlBaseUrl}/predict`,
             {
                 symptoms,
             }

@@ -1,11 +1,28 @@
 import React from "react";
 import { Activity } from "lucide-react";
 
+// Accepts either the full API response object ({ top_predictions: [...] })
+// or a plain array of predictions. Confidence may be a number or a string like "12.90%".
+function normalizePredictions(data) {
+    const list = Array.isArray(data) ? data : data?.top_predictions;
+    if (!Array.isArray(list)) return [];
+
+    return list
+        .map((p) => ({
+            disease: String(p.disease ?? ""),
+            confidence: parseFloat(String(p.confidence).replace("%", "")),
+        }))
+        .filter((p) => p.disease && Number.isFinite(p.confidence));
+}
+
 export function StructuredResponseCard({ data }) {
-    if (!data || data.length === 0) {
+    const predictions = normalizePredictions(data);
+
+    if (predictions.length === 0) {
         return null;
     }
-    const topPrediction = data[0];
+
+    const topPrediction = predictions[0];
     let urgency = "Low";
 
     if (topPrediction.confidence >= 70) {
@@ -67,7 +84,7 @@ export function StructuredResponseCard({ data }) {
                 </h4>
 
                 <div className="space-y-3">
-                    {data.map((prediction, index) => (
+                    {predictions.map((prediction, index) => (
                         <div
                             key={index}
                             className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800"
@@ -89,7 +106,7 @@ export function StructuredResponseCard({ data }) {
                                 <div
                                     className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-700"
                                     style={{
-                                        width: `${prediction.confidence}%`,
+                                        width: `${Math.min(prediction.confidence, 100)}%`,
                                     }}
                                 />
                             </div>

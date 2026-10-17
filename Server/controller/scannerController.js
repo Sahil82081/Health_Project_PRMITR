@@ -34,8 +34,10 @@ const analyzeImage = async (req, res) => {
 
         console.log("4. Sending request to FastAPI");
 
+        const mlBaseUrl = (process.env.ML_API_URL || "http://127.0.0.1:5000").replace(/\/+$/, "");
+
         const response = await axios.post(
-            "http://127.0.0.1:5000/predict-image",
+            `${mlBaseUrl}/predict-image`,
             form,
             {
                 headers: {

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 export function useSymptomChecker() {
     const [messages, setMessages] = useState([
@@ -44,7 +45,7 @@ export function useSymptomChecker() {
 
             console.log(sessionId);
             const res = await axios.post(
-                "http://localhost:8000/api/chatbot",
+                API_ENDPOINTS.CHATBOT,
                 {
                     sessionId,
                     message: textToSend,
@@ -87,7 +88,7 @@ export function useSymptomChecker() {
         const predictDisease = async () => {
             try {
                 const res = await axios.post(
-                    "http://localhost:8000/api/predict",
+                    API_ENDPOINTS.PREDICT,
                     {
                         symptoms,
                     }

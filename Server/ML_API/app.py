@@ -1,14 +1,33 @@
+import os
+import shutil
+from pathlib import Path
+
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from predictor import predict_disease
 from skin_model.predict import predict as predict_skin_image
 
-import shutil
-from pathlib import Path
+
+app = FastAPI(title="Health Project ML API")
+
+# Enable CORS for ML API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-app = FastAPI()
+@app.get("/")
+def health_check():
+    return {
+        "status": "healthy",
+        "service": "Health Project ML API"
+    }
 
 
 # =========================================================
@@ -16,7 +35,6 @@ app = FastAPI()
 # =========================================================
 
 class PredictionRequest(BaseModel):
-
     symptoms: list[str]
 
 
@@ -56,7 +74,6 @@ async def predict_image(
 
     image_path = TEMP_DIR / filename
 
-
     try:
 
         # Save uploaded image
@@ -70,12 +87,10 @@ async def predict_image(
                 buffer
             )
 
-
         # Run EfficientNet
         result = predict_skin_image(
             str(image_path)
         )
-
 
         return {
 
@@ -84,7 +99,6 @@ async def predict_image(
             "prediction": result
 
         }
-
 
     except Exception as e:
 
@@ -96,10 +110,16 @@ async def predict_image(
 
         }
 
-
     finally:
 
         # Remove temporary image
         if image_path.exists():
 
             image_path.unlink()
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 5000))
+    host = os.environ.get("HOST", "0.0.0.0")
+    uvicorn.run("app:app", host=host, port=port, reload=True)
