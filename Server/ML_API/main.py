@@ -1,3 +1,4 @@
+print("========== STARTING AEROAI ML API ==========")
 import os
 import uvicorn
 from app import app
