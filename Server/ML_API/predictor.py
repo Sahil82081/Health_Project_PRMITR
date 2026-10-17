@@ -7,8 +7,13 @@ for use in app.py (or anywhere else in the web app backend).
 
 import os
 import pickle
+import warnings
 
 import pandas as pd
+from sklearn.exceptions import InconsistentVersionWarning
+
+# Suppress minor version warning across scikit-learn versions
+warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
