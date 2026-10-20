@@ -1,0 +1,31 @@
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Temporary & runtime files
+temp/*
+!temp/.gitkeep
+*.log
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Old model backups (keep best_model.pth only)
+skin_model/best_model_oild.pth
+skin_model/predict_old.py
+skin_model/__pycache__/
+
+# Git
+.git/
+.gitignore

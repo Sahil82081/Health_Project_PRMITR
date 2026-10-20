@@ -1,0 +1,51 @@
+name: Build & Push ML_API to Docker Hub
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "Server/ML_API/**"
+      - ".github/workflows/docker-build-push.yml"
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker image tag'
+        required: false
+        default: 'latest'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/health-ml-api
+          tags: |
+            type=raw,value=latest
+            type=sha,format=short
+
+      - name: Build and push ML_API Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Server/ML_API
+          file: ./Server/ML_API/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
