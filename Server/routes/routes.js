@@ -12,6 +12,11 @@ route.post("/predict", chatController.predictDisease);
 route.post("/analyze", upload.single("image"), scannerController.analyzeImage);
 
 
+route.head("/status", (req, res) => {
+    res.set("Content-Type", "application/json; charset=utf-8");
+    res.status(200).end();
+});
+
 route.get("/status", (req, res) => {
     res.json({ status: "Server is running" });
 });

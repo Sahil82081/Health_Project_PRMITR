@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -28,8 +28,26 @@ app.add_middleware(
 )
 
 
+@app.head("/")
+async def health_head():
+    return Response(status_code=status.HTTP_200_OK, media_type="application/json")
+
+
 @app.get("/")
 def health_check():
+    return {
+        "status": "healthy",
+        "service": "Health Project ML API"
+    }
+
+
+@app.head("/health")
+async def health_endpoint_head():
+    return Response(status_code=status.HTTP_200_OK, media_type="application/json")
+
+
+@app.get("/health")
+def health_endpoint():
     return {
         "status": "healthy",
         "service": "Health Project ML API"

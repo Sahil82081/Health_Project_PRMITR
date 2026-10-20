@@ -20,7 +20,7 @@ const corsOptions = {
             callback(new Error(`Not allowed by CORS: ${origin}`));
         }
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
 };
@@ -31,8 +31,24 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", routes);
 
+// Explicit HEAD handling for root monitoring endpoint
+app.head("/", (req, res) => {
+    res.set("Content-Type", "text/html; charset=utf-8");
+    res.status(200).end();
+});
+
 app.get("/", (req, res) => {
     res.send("Welcome To My Server");
+});
+
+// Dedicated health endpoints for uptime monitoring services
+app.head("/health", (req, res) => {
+    res.set("Content-Type", "application/json; charset=utf-8");
+    res.status(200).end();
+});
+
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "healthy" });
 });
 
 app.listen(PORT, "0.0.0.0", () => {
